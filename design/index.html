@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Aqeedah Platform Proposal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Amiri:wght@400;700&display=swap">
+<style>
+/* Layout: a single reading column (~68ch) for the argument, breaking out to a wide column for tables and screen mockups. Samarkand tile palette: lapis + turquoise on a cool stone ground. */
+:root{
+  --stone:#F2F5F4; --panel:#FFFFFF; --ink:#13202A; --muted:#566770; --line:#D3DCDA;
+  --lapis:#1E4A86; --turq:#0F7F7E; --turq-soft:#DCEFEE; --lapis-soft:#E1E9F5;
+  --ok:#2E7D4F; --warn:#9A6400; --bad:#B23A3A;
+  --f-display:"Alegreya", Georgia, "Times New Roman", serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --f-arabic:"Amiri", "Traditional Arabic", "Noto Naskh Arabic", serif;
+  --s1:.25rem; --s2:.5rem; --s3:.75rem; --s4:1rem; --s5:1.5rem; --s6:2.25rem; --s7:3.5rem;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --stone:#0E161B; --panel:#152129; --ink:#E2EAEA; --muted:#93A5AC; --line:#2A3A43;
+  --lapis:#86A9E3; --turq:#4EC0BC; --turq-soft:#163A3B; --lapis-soft:#1B2B44;
+  --ok:#6CC596; --warn:#E0B060; --bad:#EE8B8B; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --stone:#0E161B; --panel:#152129; --ink:#E2EAEA; --muted:#93A5AC; --line:#2A3A43;
+  --lapis:#86A9E3; --turq:#4EC0BC; --turq-soft:#163A3B; --lapis-soft:#1B2B44;
+  --ok:#6CC596; --warn:#E0B060; --bad:#EE8B8B; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--stone); color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); padding-block:0 var(--s7)}
+a{color:var(--lapis); text-underline-offset:2px}
+a:focus-visible, button:focus-visible{outline:2px solid var(--turq); outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display); text-wrap:balance; line-height:1.15; margin:0}
+h1{font-size:clamp(2.2rem, 6vw, 3.6rem); font-weight:700}
+h2{font-size:clamp(1.6rem, 3.6vw, 2.2rem); font-weight:700}
+h3{font-size:1.25rem; font-weight:700}
+p{margin:0}
+.col{max-width:68ch; margin-inline:auto}
+.wide{max-width:1120px; margin-inline:auto}
+.eyebrow{font-family:var(--f-mono); font-size:.75rem; letter-spacing:.08em; text-transform:uppercase; color:var(--turq)}
+.muted{color:var(--muted)}
+.stack{display:flex; flex-direction:column; gap:var(--s4)}
+section{padding-block:var(--s7) 0}
+section > .col, section > .wide{display:flex; flex-direction:column; gap:var(--s4)}
+
+/* Tile band: the page's one ornament */
+.tiles{height:46px; margin-inline:calc(-1 * max(16px, env(safe-area-inset-left,0px))); color:var(--turq); opacity:.9}
+.tiles svg{display:block; width:100%; height:100%}
+
+header.hero{padding-block:var(--s6) var(--s5)}
+header.hero .col{display:flex; flex-direction:column; gap:var(--s4)}
+.lede{font-size:1.15rem; color:var(--ink)}
+.bismillah{font-family:var(--f-arabic); font-size:1.6rem; color:var(--lapis); direction:rtl; text-align:left}
+.meta-row{display:flex; flex-wrap:wrap; gap:var(--s2) var(--s4); font-family:var(--f-mono); font-size:.8rem; color:var(--muted)}
+
+nav.toc{border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding-block:var(--s3)}
+nav.toc ol{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:var(--s2) var(--s5); font-size:.92rem}
+nav.toc li span{font-family:var(--f-mono); color:var(--muted); margin-right:.35em}
+
+.callout{background:var(--turq-soft); border-radius:6px; padding:var(--s4) var(--s5)}
+.callout strong{color:var(--ink)}
+ul.clean{margin:0; padding-left:1.1rem; display:flex; flex-direction:column; gap:var(--s2)}
+
+/* Tables */
+.tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--panel)}
+table{border-collapse:collapse; width:100%; min-width:860px; font-size:.9rem}
+th,td{text-align:left; vertical-align:top; padding:var(--s3) var(--s4); border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:500; background:var(--stone)}
+td.rank{font-family:var(--f-display); font-size:1.5rem; font-weight:700; color:var(--lapis); width:3rem}
+td .site{font-weight:600}
+td .url{font-family:var(--f-mono); font-size:.78rem; color:var(--muted); display:block}
+.tag{display:inline-block; font-family:var(--f-mono); font-size:.7rem; padding:.05rem .4rem; border-radius:3px; background:var(--lapis-soft); color:var(--lapis); margin:.1rem .2rem .1rem 0; white-space:nowrap}
+.plus{color:var(--ok)} .minus{color:var(--bad)}
+
+/* Lessons grid */
+.grid2{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:var(--s4)}
+.lesson{border-top:2px solid var(--turq); padding-top:var(--s3); display:flex; flex-direction:column; gap:var(--s2); min-width:0}
+.lesson .from{font-family:var(--f-mono); font-size:.75rem; color:var(--muted)}
+
+/* Features */
+.feat{display:grid; grid-template-columns:4.2rem 1fr; gap:var(--s2) var(--s4); padding-block:var(--s4); border-bottom:1px solid var(--line)}
+.feat:last-child{border-bottom:0}
+.feat .id{font-family:var(--f-mono); font-size:.85rem; color:var(--lapis); font-weight:500; padding-top:.15rem}
+.feat > div{min-width:0; display:flex; flex-direction:column; gap:var(--s1)}
+.feat h3{font-family:var(--f-body); font-size:1.02rem; font-weight:600}
+.phase{display:inline-block; font-family:var(--f-mono); font-size:.68rem; letter-spacing:.05em; text-transform:uppercase; padding:.05rem .45rem; border-radius:3px; margin-left:.4rem; vertical-align:2px}
+.phase.mvp{background:var(--turq); color:var(--panel)}
+.phase.p2{background:var(--lapis-soft); color:var(--lapis)}
+
+/* Roles */
+.roles{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:var(--s4)}
+.role{background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:var(--s4); display:flex; flex-direction:column; gap:var(--s2); min-width:0}
+.role .who{font-family:var(--f-mono); font-size:.72rem; color:var(--turq); text-transform:uppercase; letter-spacing:.06em}
+.role ul{margin:0; padding-left:1rem; font-size:.9rem; color:var(--muted)}
+
+/* Workflow */
+.flow{display:flex; flex-wrap:wrap; gap:var(--s2); align-items:stretch}
+.step{flex:1 1 150px; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:var(--s3); display:flex; flex-direction:column; gap:var(--s1); min-width:0; position:relative}
+.step .n{font-family:var(--f-mono); font-size:.72rem; color:var(--muted)}
+.step b{font-size:.95rem}
+.step small{color:var(--muted); font-size:.82rem; line-height:1.45}
+.step.alt{border-style:dashed}
+.branches{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:var(--s3); font-size:.9rem}
+.branches div{padding:var(--s3); border-left:3px solid var(--lapis); background:var(--panel)}
+
+/* Sitemap */
+.sitemap{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:var(--s4)}
+.tree{background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:var(--s4); min-width:0}
+.tree h3{font-family:var(--f-body); font-size:.95rem; font-weight:600; margin-bottom:var(--s2)}
+.tree ul{list-style:none; margin:0; padding:0; font-size:.88rem; display:flex; flex-direction:column; gap:.3rem}
+.tree li{padding-left:1rem; position:relative}
+.tree li::before{content:""; position:absolute; left:0; top:.7em; width:.55rem; border-top:1px solid var(--line)}
+.tree code{font-family:var(--f-mono); font-size:.78rem; color:var(--muted)}
+
+/* ===== Mockups ===== */
+.mock-label{display:flex; flex-wrap:wrap; justify-content:space-between; gap:var(--s2); align-items:baseline}
+.mock-label h3{font-size:1.15rem}
+.screen{background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; box-shadow:0 1px 0 var(--line), 0 18px 40px -28px rgba(10,30,50,.45)}
+.chrome{display:flex; gap:6px; align-items:center; padding:8px 12px; border-bottom:1px solid var(--line); background:var(--stone)}
+.chrome i{width:9px; height:9px; border-radius:50%; background:var(--line); display:block}
+.chrome .addr{margin-left:10px; font-family:var(--f-mono); font-size:.72rem; color:var(--muted); background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:2px 10px; flex:1; max-width:360px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.app{font-size:.88rem}
+.appbar{display:flex; flex-wrap:wrap; align-items:center; gap:var(--s3) var(--s5); padding:12px 20px; border-bottom:1px solid var(--line)}
+.brand{font-family:var(--f-display); font-weight:700; font-size:1.25rem; color:var(--lapis); display:flex; align-items:center; gap:8px}
+.brand svg{width:22px; height:22px; color:var(--turq)}
+.appnav{display:flex; flex-wrap:wrap; gap:var(--s4); color:var(--muted)}
+.appnav .on{color:var(--ink); font-weight:600}
+.spacer{flex:1}
+.lang{display:inline-flex; border:1px solid var(--line); border-radius:4px; overflow:hidden; font-family:var(--f-mono); font-size:.72rem}
+.lang span{padding:2px 8px} .lang .on{background:var(--lapis); color:var(--panel)}
+.btn{display:inline-flex; align-items:center; gap:6px; font:600 .85rem var(--f-body); padding:8px 14px; border-radius:5px; border:1px solid transparent; background:var(--turq); color:var(--panel); white-space:nowrap}
+.btn.ghost{background:transparent; color:var(--ink); border-color:var(--line)}
+.btn.small{padding:4px 10px; font-size:.78rem}
+
+.m-hero{padding:28px 20px 22px; background:linear-gradient(180deg, var(--lapis-soft), transparent); display:flex; flex-direction:column; gap:12px}
+.m-hero .q{font-family:var(--f-display); font-size:clamp(1.3rem,3vw,1.8rem); font-weight:700}
+.searchbox{display:flex; gap:8px; align-items:center; background:var(--panel); border:1.5px solid var(--lapis); border-radius:6px; padding:10px 12px; max-width:720px}
+.searchbox .ph{flex:1; color:var(--muted); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.searchbox .kbd{font-family:var(--f-mono); font-size:.7rem; color:var(--muted); border:1px solid var(--line); border-radius:3px; padding:0 5px}
+.hint{font-size:.78rem; color:var(--muted)}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{border:1px solid var(--line); border-radius:999px; padding:3px 10px; font-size:.78rem; background:var(--panel)}
+.chip.on{border-color:var(--turq); color:var(--turq); font-weight:600}
+
+.m-body{display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:20px; padding:20px}
+@media (max-width:760px){.m-body{grid-template-columns:1fr}}
+.m-h{font-family:var(--f-mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin-bottom:8px}
+.qlist{display:flex; flex-direction:column}
+.qitem{padding:10px 0; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:3px}
+.qitem:last-child{border-bottom:0}
+.qitem b{font-weight:600; font-size:.92rem}
+.qmeta{display:flex; flex-wrap:wrap; gap:4px 10px; font-size:.74rem; color:var(--muted)}
+.qmeta .cat{color:var(--turq)}
+.cats{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px}
+.cat-tile{border:1px solid var(--line); border-radius:5px; padding:8px 10px; display:flex; justify-content:space-between; gap:6px; font-size:.82rem}
+.cat-tile span:last-child{font-family:var(--f-mono); font-size:.72rem; color:var(--muted); font-variant-numeric:tabular-nums}
+.askcard{margin-top:14px; border-radius:6px; padding:14px; background:var(--turq-soft); display:flex; flex-direction:column; gap:8px; font-size:.84rem}
+
+/* Answer page mock */
+.ans{display:grid; grid-template-columns:minmax(0,1fr) 240px; gap:24px; padding:22px 24px}
+@media (max-width:820px){.ans{grid-template-columns:1fr}}
+.crumbs{font-size:.75rem; color:var(--muted)}
+.ans h4{font-family:var(--f-display); font-size:clamp(1.25rem,2.6vw,1.6rem); margin:6px 0 4px; line-height:1.2; text-wrap:balance}
+.asked{font-size:.85rem; color:var(--muted); font-style:italic; border-left:2px solid var(--line); padding-left:10px; margin:10px 0}
+.short{background:var(--turq-soft); border-radius:6px; padding:12px 14px; margin:12px 0}
+.short .m-h{color:var(--turq); margin-bottom:4px}
+.ayah{border:1px solid var(--line); border-radius:6px; padding:12px 14px; margin:10px 0; display:flex; flex-direction:column; gap:6px}
+.ayah .ar{font-family:var(--f-arabic); font-size:1.45rem; line-height:1.9; direction:rtl; text-align:right; color:var(--ink)}
+.ayah .tr{font-size:.85rem}
+.ayah .ref{font-family:var(--f-mono); font-size:.72rem; color:var(--muted)}
+.madhab{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:6px; margin-top:8px}
+.madhab div{border:1px solid var(--line); border-radius:5px; padding:8px; font-size:.78rem}
+.madhab div b{display:block; font-size:.74rem; font-family:var(--f-mono); color:var(--lapis)}
+.side{display:flex; flex-direction:column; gap:14px; min-width:0}
+.scholar{display:flex; gap:10px; align-items:center}
+.avatar{width:38px; height:38px; border-radius:50%; background:var(--lapis-soft); color:var(--lapis); display:grid; place-items:center; font-weight:600; font-size:.85rem; flex:none}
+.seal{border:1px solid var(--ok); color:var(--ok); border-radius:5px; padding:8px 10px; font-size:.78rem; display:flex; flex-direction:column; gap:2px}
+.facts{font-size:.78rem; display:grid; grid-template-columns:auto 1fr; gap:4px 10px}
+.facts dt{color:var(--muted)} .facts dd{margin:0; font-family:var(--f-mono); font-size:.74rem}
+
+/* Phones */
+.phones{display:flex; flex-wrap:wrap; gap:24px; justify-content:center}
+.phone{width:300px; max-width:100%; background:var(--panel); border:1px solid var(--line); border-radius:28px; padding:12px; box-shadow:0 18px 40px -28px rgba(10,30,50,.5)}
+.phone .notch{width:90px; height:5px; border-radius:3px; background:var(--line); margin:4px auto 10px}
+.phone .scr{border:1px solid var(--line); border-radius:18px; overflow:hidden; font-size:.82rem; min-height:520px; display:flex; flex-direction:column}
+.ph-top{padding:10px 14px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; gap:8px}
+.ph-top b{font-size:.9rem}
+.ph-body{padding:14px; display:flex; flex-direction:column; gap:10px; flex:1}
+.stepper{display:flex; gap:4px} .stepper i{flex:1; height:3px; border-radius:2px; background:var(--line)} .stepper i.on{background:var(--turq)}
+.field{border:1px solid var(--line); border-radius:6px; padding:9px 10px; display:flex; flex-direction:column; gap:3px}
+.field label{font-size:.7rem; color:var(--muted); font-family:var(--f-mono); text-transform:uppercase; letter-spacing:.05em}
+.field .val{font-size:.84rem}
+.similar{background:var(--lapis-soft); border-radius:6px; padding:10px; display:flex; flex-direction:column; gap:6px}
+.similar b{font-size:.78rem; color:var(--lapis)}
+.similar a{font-size:.8rem; text-decoration:none; color:var(--ink); border-bottom:1px dashed var(--line); padding-bottom:4px}
+.toggle{display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:.8rem}
+.sw{width:32px; height:18px; border-radius:9px; background:var(--line); position:relative; flex:none}
+.sw.on{background:var(--turq)} .sw::after{content:""; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:var(--panel)} .sw.on::after{left:16px}
+.ph-foot{padding:12px 14px; border-top:1px solid var(--line)}
+.ph-foot .btn{width:100%; justify-content:center}
+.timeline{display:flex; flex-direction:column; gap:0; margin-top:4px}
+.tl{display:grid; grid-template-columns:18px 1fr; gap:10px; padding-bottom:12px; position:relative}
+.tl::before{content:""; position:absolute; left:8px; top:16px; bottom:0; border-left:1.5px solid var(--line)}
+.tl:last-child::before{display:none}
+.dot{width:17px; height:17px; border-radius:50%; border:2px solid var(--line); background:var(--panel); margin-top:2px}
+.tl.done .dot{background:var(--ok); border-color:var(--ok)}
+.tl.now .dot{border-color:var(--turq); box-shadow:0 0 0 3px var(--turq-soft)}
+.tl small{display:block; color:var(--muted); font-size:.72rem}
+.ticket{font-family:var(--f-mono); font-size:.75rem; background:var(--stone); border-radius:5px; padding:6px 8px; display:flex; justify-content:space-between}
+.tg{display:flex; gap:8px; align-items:flex-start; font-size:.78rem; background:var(--stone); border-radius:6px; padding:8px}
+
+/* Scholar desk mock */
+.desk{display:grid; grid-template-columns:200px minmax(0,1fr) minmax(0,1.2fr); min-height:420px}
+@media (max-width:900px){.desk{grid-template-columns:1fr}}
+.desk-nav{border-right:1px solid var(--line); padding:14px; display:flex; flex-direction:column; gap:4px; font-size:.82rem; background:var(--stone)}
+.desk-nav div{display:flex; justify-content:space-between; padding:6px 8px; border-radius:4px}
+.desk-nav div.on{background:var(--panel); font-weight:600}
+.desk-nav span:last-child{font-family:var(--f-mono); font-size:.72rem; color:var(--muted)}
+.queue{border-right:1px solid var(--line); display:flex; flex-direction:column; min-width:0}
+.qrow{padding:10px 14px; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:4px}
+.qrow.sel{background:var(--lapis-soft)}
+.qrow b{font-size:.84rem; font-weight:600}
+.status{font-family:var(--f-mono); font-size:.66rem; padding:1px 6px; border-radius:3px; text-transform:uppercase; letter-spacing:.04em}
+.st-new{background:var(--lapis-soft); color:var(--lapis)} .st-urgent{background:transparent; color:var(--bad); border:1px solid var(--bad)} .st-review{color:var(--warn); border:1px solid var(--warn)} .st-tr{color:var(--turq); border:1px solid var(--turq)}
+.editor{padding:14px 16px; display:flex; flex-direction:column; gap:10px; min-width:0}
+.ed-block{border:1px solid var(--line); border-radius:6px; padding:10px; font-size:.82rem; display:flex; flex-direction:column; gap:4px}
+.ed-block label{font-family:var(--f-mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
+.ed-tools{display:flex; flex-wrap:wrap; gap:6px}
+.dup{border-left:3px solid var(--warn); padding:8px 10px; font-size:.78rem; background:var(--stone)}
+
+/* Decisions */
+.dec{display:grid; grid-template-columns:3rem 1fr; gap:var(--s3); padding-block:var(--s4); border-bottom:1px solid var(--line)}
+.dec .id{font-family:var(--f-mono); color:var(--turq); font-weight:500}
+.dec > div{min-width:0; display:flex; flex-direction:column; gap:var(--s1)}
+.dec .rec{font-size:.92rem}
+.dec .rec b{color:var(--lapis)}
+
+.sources{font-size:.85rem; columns:2 300px; column-gap:var(--s6)}
+.sources li{break-inside:avoid; margin-bottom:.35rem}
+footer{padding-block:var(--s6) 0; font-size:.85rem}
+@media (prefers-reduced-motion:no-preference){ .screen,.phone{transition:transform .25s ease} .screen:hover{transform:translateY(-2px)} }
+</style>
+</head>
+<body>
+
+<div class="tiles" aria-hidden="true">
+  <svg preserveAspectRatio="xMidYMid slice"><defs>
+    <pattern id="girih" width="46" height="46" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="currentColor" stroke-width="1.2">
+        <rect x="11" y="11" width="24" height="24"/>
+        <rect x="11" y="11" width="24" height="24" transform="rotate(45 23 23)"/>
+        <circle cx="23" cy="23" r="4"/>
+        <path d="M0 0 L6 6 M46 0 L40 6 M0 46 L6 40 M46 46 L40 40"/>
+      </g>
+    </pattern></defs>
+    <rect width="100%" height="100%" fill="url(#girih)"/>
+  </svg>
+</div>
+
+<header class="hero">
+  <div class="col">
+    <div class="bismillah" lang="ar">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+    <span class="eyebrow">Proposal v1 · for Abdulloh's review</span>
+    <h1>Aqeedah: a trusted bilingual place to ask about Islam</h1>
+    <p class="lede">What already exists for Uzbek, Russian and English-speaking Muslims, what those sites do well and badly, and a first design for an Uzbek + English question-and-answer platform built on what we learned.</p>
+    <div class="meta-row"><span>Researched 26 Oct 2026</span><span>17 platforms reviewed</span><span>Features numbered F1–F16, decisions D1–D8, so you can reply with "change F7"</span></div>
+  </div>
+</header>
+
+<div class="col">
+<nav class="toc" aria-label="Contents"><ol>
+  <li><span>1</span><a href="#summary">Summary</a></li>
+  <li><span>2</span><a href="#uzbek">Uzbek &amp; Russian sites</a></li>
+  <li><span>3</span><a href="#global">Global sites</a></li>
+  <li><span>4</span><a href="#lessons">What to borrow</a></li>
+  <li><span>5</span><a href="#features">Features</a></li>
+  <li><span>6</span><a href="#roles">Roles &amp; workflow</a></li>
+  <li><span>7</span><a href="#ia">Site structure</a></li>
+  <li><span>8</span><a href="#mockups">Screen mockups</a></li>
+  <li><span>9</span><a href="#decisions">Your decisions</a></li>
+</ol></nav>
+</div>
+
+<!-- 1 SUMMARY -->
+<section id="summary"><div class="col">
+  <span class="eyebrow">1 · Summary</span>
+  <h2>The gap we can fill</h2>
+  <p>Uzbek Muslims already have strong, trusted question-and-answer sources. The biggest is <b>savollar.islom.uz</b> ("Zikr ahlidan so'rang"), with 75,000+ answers on the site and a Telegram channel of about 150,000. The Muslim Board's <b>muslim.uz</b> has its own Fatvo hay'ati answers and a call center on Telegram and WhatsApp. So the need is not "a first Uzbek Q&amp;A site".</p>
+  <p>What none of them offer, as far as we could verify, is the combination of:</p>
+  <ul class="clean">
+    <li><b>Uzbek and English side by side</b>, for diaspora, students, converts and the next generation.</li>
+    <li><b>Answers with visible evidence</b> (Qur'an, hadith with grading, madhhab views) and a <b>named scholar plus a second reviewer</b>, as SeekersGuidance does.</li>
+    <li><b>Search that understands Uzbek</b>: Latin and Cyrillic, and every spelling of o‘ and g‘.</li>
+    <li><b>A tracked question</b> with a number and a status, so askers are not left waiting in a Telegram inbox.</li>
+  </ul>
+  <div class="callout"><strong>Positioning I recommend:</strong> a Hanafi–Maturidi platform that works <i>alongside</i> the Muslim Board and existing scholars, not against them. Uzbekistan regulates religious content closely (in May 2026 the state launched a bot that checks whether religious material is approved), and the Board publicly warned people against taking religious answers from ChatGPT. Credibility and alignment will matter more than features. See D1 and D2.</div>
+</div></section>
+
+<!-- 2 UZBEK -->
+<section id="uzbek"><div class="wide stack">
+  <div class="col stack" style="margin:0 auto; width:100%">
+    <span class="eyebrow">2 · Research</span>
+    <h2>Uzbek and Russian-language platforms</h2>
+    <p class="muted">Ranked by how relevant they are to our audience. Strengths and weaknesses are from the sites themselves and press coverage. Where I could not verify a detail, I say so.</p>
+  </div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>#</th><th>Platform</th><th>Language</th><th>Who answers · scale</th><th>Strengths</th><th>Weaknesses / gaps for us</th></tr></thead>
+    <tbody>
+      <tr><td class="rank">1</td><td><span class="site">Zikr ahlidan so'rang</span><span class="url">savollar.islom.uz</span><span class="tag">Hanafi</span></td><td>Uzbek (Latin + Cyrillic), Russian section on islam.uz</td><td>Scholars of islom.uz, the portal founded in 2003 by Sheikh Muhammad Sodiq Muhammad Yusuf. 75,000+ answers on the site; The Diplomat reported ~200,000 archived questions in 2022. Telegram ~150k.</td><td><span class="plus">+</span> The most trusted Uzbek name. Huge archive. Keyword search. Answers republished to Telegram with the asker's consent.</td><td><span class="minus">−</span> No English. Archive is huge but hard to browse by topic. No public question status or scholar byline that I could verify.</td></tr>
+      <tr><td class="rank">2</td><td><span class="site">Muslim Board of Uzbekistan</span><span class="url">muslim.uz · savollar.muslim.uz</span><span class="tag">Official</span></td><td>UI in O'z / Ru / En / Ar; content mostly Uzbek Cyrillic</td><td>Fatvo hay'ati (Fatwa Center). Call center on Telegram @fatvo_call_1, @Fatvo_call_2 and WhatsApp. Mufti's bot @muftiy_savol_javob_Bot since April 2023.</td><td><span class="plus">+</span> Official authority. Fatwa categories (taharat, namoz, ro'za, zakot, haj, janoza). Columns like "7 savolga 7 javob".</td><td><span class="minus">−</span> Questions arrive through scattered channels (bots, WhatsApp, site). Short answers. New site says it is "in test mode". English page exists but content is thin.</td></tr>
+      <tr><td class="rank">3</td><td><span class="site">Muslimaat.uz</span><span class="url">muslimaat.uz</span><span class="tag">Women</span></td><td>Uzbek</td><td>"Dinda savolim bor" answered by Odinaxon Muhammad Sodiq. Started 2004 as a women's section of islom.uz.</td><td><span class="plus">+</span> A women's desk answered by a woman. Also psychologist, doctor and lawyer consultations, and a forum.</td><td><span class="minus">−</span> Separate site from the main archive. No volume figures published.</td></tr>
+      <tr><td class="rank">4</td><td><span class="site">Islom.uz app</span><span class="url">Google Play · App Store</span></td><td>Uzbek</td><td>5M+ installs, 4.8★ (~29k reviews).</td><td><span class="plus">+</span> Shows where Uzbek users actually are: on phones. Prayer times, qibla, mosques, radio, news from islom.uz, quran.uz, hadis.islom.uz, fiqh.uz.</td><td><span class="minus">−</span> The store listing does not mention asking questions in the app.</td></tr>
+      <tr><td class="rank">5</td><td><span class="site">Umma.ru + Islamic AI</span><span class="url">umma.ru · ai.umma.ru</span></td><td>Russian (AI answers in any language)</td><td>Shamil Alyautdinov and team. Fatwa sections by topic.</td><td><span class="plus">+</span> The most careful AI design I found: it answers only from the site's own material, links every source, says it "does not issue fatwas", and sends hard cases (divorce, inheritance) to a living scholar.</td><td><span class="minus">−</span> Russian only interface. Paid credits for AI. Personal-brand site.</td></tr>
+      <tr><td class="rank">6</td><td><span class="site">Azan.ru / Azan.info</span><span class="url">azan.info</span><span class="tag">Hanafi / Shafi'i</span></td><td>Russian</td><td>Editorial team; answers published as articles.</td><td><span class="plus">+</span> Good structured lessons (durus), prayer times, tafsir app.</td><td><span class="minus">−</span> No dedicated "ask a scholar" service that I could find.</td></tr>
+      <tr><td class="rank">7</td><td><span class="site">DUMK Imam AI (Kazakhstan)</span><span class="url">muftyat.kz</span></td><td>Kazakh / Russian</td><td>Spiritual Administration of Muslims of Kazakhstan; pilot planned May 2026.</td><td><span class="plus">+</span> Shows official bodies in the region moving to digital, AI-assisted answers.</td><td><span class="minus">−</span> Details and safeguards not public yet.</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<!-- 3 GLOBAL -->
+<section id="global"><div class="wide stack">
+  <div class="col stack" style="margin:0 auto; width:100%">
+    <span class="eyebrow">3 · Research</span>
+    <h2>Top global Q&amp;A platforms</h2>
+    <p class="muted">Ranked by reach, quality of process, and how much we can learn from them.</p>
+  </div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>#</th><th>Platform</th><th>Language</th><th>Who answers · scale</th><th>Strengths</th><th>Weaknesses</th></tr></thead>
+    <tbody>
+      <tr><td class="rank">1</td><td><span class="site">IslamQA.info</span><span class="url">islamqa.info</span></td><td>17 incl. Russian, Tajik, Uyghur</td><td>Supervised by Sh. Muhammad Salih al-Munajjid. Online since 1996, one of the first fatwa sites. ~10M visits/month (2022).</td><td><span class="plus">+</span> Category tree, favorites, offline reading, apps, very large archive.</td><td><span class="minus">−</span> One supervisor and a Salafi-leaning method that often differs from Uzbekistan's Hanafi practice. No Uzbek.</td></tr>
+      <tr><td class="rank">2</td><td><span class="site">SeekersGuidance Answers</span><span class="url">seekersguidance.org/answers</span><span class="tag">Hanafi / Shafi'i</span></td><td>English, Arabic</td><td>Every published answer approved by at least two qualified scholars.</td><td><span class="plus">+</span> The best review process. Free, donor-funded. Appointments with scholars, courses, tags.</td><td><span class="minus">−</span> English-centric. Answers can be slow to appear.</td></tr>
+      <tr><td class="rank">3</td><td><span class="site">IslamQA.org</span><span class="url">islamqa.org</span><span class="tag">4 madhhabs</span></td><td>English</td><td>Aggregator of answers from darul iftas worldwide; 90,000+ Hanafi answers alone.</td><td><span class="plus">+</span> Browse by madhhab, by scholar and by source institution. Scholar directory.</td><td><span class="minus">−</span> You cannot ask. Quality varies by source.</td></tr>
+      <tr><td class="rank">4</td><td><span class="site">Islamweb Fatwa</span><span class="url">islamweb.net</span></td><td>Ar, En, Fr, Es, De, Id</td><td>Qatar Ministry of Awqaf. 12,000+ requests in two months (2016).</td><td><span class="plus">+</span> State-backed. "Fatwa of the week". Inheritance calculator.</td><td><span class="minus">−</span> Dated interface. Browse by subject, little visible search.</td></tr>
+      <tr><td class="rank">5</td><td><span class="site">Dar al-Ifta al-Misriyyah</span><span class="url">dar-alifta.org</span></td><td>Arabic + 8 more</td><td>Egypt's official fatwa body. FatwaPro app answered 2,475 questions in English and French in 2025.</td><td><span class="plus">+</span> Phone line (107), email, app, "retrieve your answer" by ticket. Marriage counseling center.</td><td><span class="minus">−</span> Feels institutional. Non-Arabic volume is small.</td></tr>
+      <tr><td class="rank">6</td><td><span class="site">Darulifta Deoband</span><span class="url">darulifta-deoband.com</span><span class="tag">Hanafi</span></td><td>Urdu, English</td><td>Nine muftis. ~42,000 fatwas (2022). Registration required.</td><td><span class="plus">+</span> Bilingual archive, which is the model closest to ours.</td><td><span class="minus">−</span> Blocked in India in 2022 after a government complaint about some answers. A warning about regulatory risk.</td></tr>
+      <tr><td class="rank">7</td><td><span class="site">AskImam</span><span class="url">askimam.org</span><span class="tag">Hanafi</span></td><td>English</td><td>Founded 2000 by Mufti Ebrahim Desai; each answer "checked and approved".</td><td><span class="plus">+</span> Clear approval seal. Strong on questions of Muslims living as minorities.</td><td><span class="minus">−</span> Answers are short and often lack the evidence.</td></tr>
+      <tr><td class="rank">8</td><td><span class="site">AboutIslam</span><span class="url">aboutislam.net</span></td><td>En, Fr, Es, Ar</td><td>Panel of scholars and counselors.</td><td><span class="plus">+</span> Separate desks: Ask the Scholar, Ask the Counselor, Parenting, Youth, Ask About Islam (for non-Muslims). Live Q&amp;A sessions.</td><td><span class="minus">−</span> Q&amp;A is buried inside a large news and media portal.</td></tr>
+      <tr><td class="rank">9</td><td><span class="site">FatwaQA (Darul Ifta Ahlesunnat)</span><span class="url">fatwaqa.com</span></td><td>English, Urdu</td><td>~13,600 fatawa archive.</td><td><span class="plus">+</span> Each submission gets a question number; AI search over the archive; one question per day limit.</td><td><span class="minus">−</span> Tied to one movement (Dawat-e-Islami).</td></tr>
+      <tr><td class="rank">10</td><td><span class="site">Ask Mufti Online</span><span class="url">askmuftionline.com</span></td><td>English</td><td>Muftis; answers promised in 24h.</td><td><span class="plus">+</span> Anonymous by default. Fast turnaround promise.</td><td><span class="minus">−</span> Paid "premium" live chat with a mufti. Madhhab not stated.</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<!-- 4 LESSONS -->
+<section id="lessons"><div class="wide stack">
+  <div class="col stack" style="margin:0 auto; width:100%">
+    <span class="eyebrow">4 · Synthesis</span>
+    <h2>What to borrow, what to avoid</h2>
+  </div>
+  <div class="grid2">
+    <div class="lesson"><span class="from">From SeekersGuidance, AskImam</span><h3>Two scholars per answer</h3><p>One writes, a senior one approves. Show both names. This is our main trust signal.</p></div>
+    <div class="lesson"><span class="from">From FatwaQA, Dar al-Ifta</span><h3>A question number</h3><p>Every asker gets a ticket like <code>AQ-24817</code> and can see its status. No more "did anyone read my message?"</p></div>
+    <div class="lesson"><span class="from">From IslamQA.org</span><h3>Browse by scholar and madhhab</h3><p>Scholar profiles with credentials, and filters that say which school an answer follows.</p></div>
+    <div class="lesson"><span class="from">From islom.uz Telegram</span><h3>Meet people on Telegram</h3><p>Accept questions and send answers through a Telegram bot, with the website as the permanent, searchable home.</p></div>
+    <div class="lesson"><span class="from">From Muslimaat.uz, AboutIslam</span><h3>Separate desks</h3><p>A women's desk answered by female scholars, plus family counseling and a desk for new Muslims.</p></div>
+    <div class="lesson"><span class="from">From umma.ru Islamic AI</span><h3>AI only as a librarian</h3><p>If we use AI at all, it finds and cites already-published answers. It never writes a ruling.</p></div>
+    <div class="lesson"><span class="from">Avoid (Darulifta Deoband)</span><h3>Regulatory blind spots</h3><p>A strong site was blocked by a government. We should know Uzbekistan's rules before launch.</p></div>
+    <div class="lesson"><span class="from">Avoid (Ask Mufti Online)</span><h3>Paywalls on religion</h3><p>Paid access to scholars erodes trust. Fund through waqf-style donations instead.</p></div>
+  </div>
+</div></section>
+
+<!-- 5 FEATURES -->
+<section id="features"><div class="col">
+  <span class="eyebrow">5 · Proposal</span>
+  <h2>Feature set</h2>
+  <p class="muted"><span class="phase mvp" style="margin:0">MVP</span> = needed for launch. <span class="phase p2" style="margin:0">Phase 2</span> = after launch, once we have scholars and traffic.</p>
+  <div>
+    <div class="feat"><span class="id">F1</span><div><h3>Search-first archive<span class="phase mvp">MVP</span></h3><p>The home page is a search box. Search treats Latin and Cyrillic as the same (<i>namoz</i> = <i>намоз</i>) and all spellings of o‘/g‘ (o', oʻ, o`, o’) as equal. English and Uzbek results appear together, labeled by language.</p></div></div>
+    <div class="feat"><span class="id">F2</span><div><h3>Guided "Ask a question"<span class="phase mvp">MVP</span></h3><p>A short form: topic, question, language, and whether it may be published. As the person types, matching answered questions appear, so many people find their answer without submitting.</p></div></div>
+    <div class="feat"><span class="id">F3</span><div><h3>Privacy choices<span class="phase mvp">MVP</span></h3><p>Ask anonymously. Choose "private answer only" for personal matters (family, divorce, health). Moderators remove names and details before anything is published.</p></div></div>
+    <div class="feat"><span class="id">F4</span><div><h3>Question number and status<span class="phase mvp">MVP</span></h3><p>Each question gets a number and a visible status: Received, Assigned, Being answered, In review, Answered, or Declined with a reason. Notifications by Telegram or email.</p></div></div>
+    <div class="feat"><span class="id">F5</span><div><h3>Structured answer page<span class="phase mvp">MVP</span></h3><p>Short answer at the top (Qisqa javob), then evidence: Qur'an in Arabic with translation, hadith with source and grading, scholarly opinions, and the madhhab views where they differ. Related questions at the bottom.</p></div></div>
+    <div class="feat"><span class="id">F6</span><div><h3>Named scholar and reviewer<span class="phase mvp">MVP</span></h3><p>Every answer shows who wrote it and who approved it, with links to profiles listing education, ijazah and institution.</p></div></div>
+    <div class="feat"><span class="id">F7</span><div><h3>Topic tree in two languages<span class="phase mvp">MVP</span></h3><p>Aqida · Taharat · Namoz · Ro'za · Zakot · Haj va Umra · Oila (nikoh, taloq) · Muomalot (savdo, bank, kripto) · Meros · Odob-axloq · Ayollar · Yangi musulmonlar · Zamonaviy masalalar. Each topic has a short intro and its most-read answers.</p></div></div>
+    <div class="feat"><span class="id">F8</span><div><h3>Uzbek ↔ English translation flow<span class="phase mvp">MVP</span></h3><p>Answers are written in the asker's language. A translator role produces the other version, and the original scholar or reviewer approves it. Each answer shows which versions exist.</p></div></div>
+    <div class="feat"><span class="id">F9</span><div><h3>Telegram bot<span class="phase mvp">MVP</span></h3><p>Ask, get your question number, and receive the answer in Telegram. Also auto-posts newly published answers to a channel.</p></div></div>
+    <div class="feat"><span class="id">F10</span><div><h3>Scholar workspace<span class="phase mvp">MVP</span></h3><p>Triage queue, my assignments, review queue, translation queue. The editor warns about duplicates and has buttons to insert an ayah or hadith with its reference.</p></div></div>
+    <div class="feat"><span class="id">F11</span><div><h3>Methodology page<span class="phase mvp">MVP</span></h3><p>States the creed and madhhab the site follows, who the scholars are, how answers are reviewed, and what the site does not answer (for example, it doesn't judge named individuals or take sides in politics).</p></div></div>
+    <div class="feat"><span class="id">F12</span><div><h3>Women's desk<span class="phase p2">Phase 2</span></h3><p>Questions routed to female scholars, with stricter privacy defaults.</p></div></div>
+    <div class="feat"><span class="id">F13</span><div><h3>Tools: meros and zakot calculators<span class="phase p2">Phase 2</span></h3><p>Inheritance and zakat calculators following the Hanafi method, each linking to answers that explain the rules.</p></div></div>
+    <div class="feat"><span class="id">F14</span><div><h3>AI "find my answer"<span class="phase p2">Phase 2</span></h3><p>Natural-language search that only quotes and links published, reviewed answers. If nothing matches, it offers to send the question to a scholar. It never writes rulings.</p></div></div>
+    <div class="feat"><span class="id">F15</span><div><h3>Live sessions and audio answers<span class="phase p2">Phase 2</span></h3><p>Monthly live Q&amp;A with a scholar, and short audio answers for people who prefer listening.</p></div></div>
+    <div class="feat"><span class="id">F16</span><div><h3>Mobile app and offline saving<span class="phase p2">Phase 2</span></h3><p>Start as an installable web app; save answers to read offline. A native app only if usage justifies it.</p></div></div>
+  </div>
+</div></section>
+
+<!-- 6 ROLES -->
+<section id="roles"><div class="wide stack">
+  <div class="col stack" style="margin:0 auto; width:100%">
+    <span class="eyebrow">6 · Proposal</span>
+    <h2>Who uses it, and how a question moves</h2>
+  </div>
+  <div class="roles">
+    <div class="role"><span class="who">Public</span><h3>Reader</h3><ul><li>Search and read all public answers</li><li>Switch Uzbek / English, Latin / Cyrillic</li><li>Share an answer link</li></ul></div>
+    <div class="role"><span class="who">Public</span><h3>Asker</h3><ul><li>Ask with an account, Telegram, or anonymously</li><li>Track status by question number</li><li>Ask one follow-up</li><li>Save answers</li></ul></div>
+    <div class="role"><span class="who">Staff</span><h3>Moderator</h3><ul><li>Screens new questions</li><li>Merges duplicates, links existing answers</li><li>Removes personal details</li><li>Routes by topic and language</li></ul></div>
+    <div class="role"><span class="who">Scholar</span><h3>Scholar (ustoz)</h3><ul><li>Takes assigned questions</li><li>Writes answers with evidence</li><li>Can return a question to the moderator</li></ul></div>
+    <div class="role"><span class="who">Scholar</span><h3>Senior reviewer</h3><ul><li>Approves or returns every answer</li><li>Final say on sensitive topics</li><li>Approves translations</li></ul></div>
+    <div class="role"><span class="who">Staff</span><h3>Translator</h3><ul><li>Produces the second language</li><li>Keeps a shared glossary of terms</li></ul></div>
+    <div class="role"><span class="who">Staff</span><h3>Admin</h3><ul><li>Adds scholars and checks credentials</li><li>Manages topics and policies</li><li>Sees reports</li></ul></div>
+  </div>
+
+  <h3 style="margin-top:var(--s4)">Question lifecycle</h3>
+  <div class="flow">
+    <div class="step"><span class="n">1 · Asker</span><b>Submitted</b><small>Gets number AQ-24817. Sees similar answers first.</small></div>
+    <div class="step"><span class="n">2 · Moderator</span><b>Triage</b><small>Duplicate? Off-topic? Personal details? Route to a topic and scholar.</small></div>
+    <div class="step"><span class="n">3 · Scholar</span><b>Answering</b><small>Short answer, then evidence and references.</small></div>
+    <div class="step"><span class="n">4 · Reviewer</span><b>Review</b><small>Approve, or return with notes.</small></div>
+    <div class="step"><span class="n">5 · System</span><b>Answered</b><small>Asker notified. Published if they agreed.</small></div>
+    <div class="step alt"><span class="n">6 · Translator</span><b>Second language</b><small>Translated, re-approved, then live in both languages.</small></div>
+  </div>
+  <div class="branches">
+    <div><b>Already answered:</b> the moderator links the existing answer and closes the question within minutes.</div>
+    <div><b>Urgent</b> (funeral, iddah, a time-bound act of worship): flagged and moved to the top of the queue.</div>
+    <div><b>Needs a personal meeting</b> (divorce, inheritance dispute): declined publicly, with a referral to a local imam or the Fatvo hay'ati.</div>
+  </div>
+</div></section>
+
+<!-- 7 IA -->
+<section id="ia"><div class="wide stack">
+  <div class="col stack" style="margin:0 auto; width:100%">
+    <span class="eyebrow">7 · Proposal</span>
+    <h2>Site structure</h2>
+    <p class="muted">Every public page exists at the same address in both languages, for example <code>/uz/javob/24817</code> and <code>/en/answer/24817</code>.</p>
+  </div>
+  <div class="sitemap">
+    <div class="tree"><h3>Find</h3><ul><li>Home: search, topics, latest <code>/</code></li><li>Search results <code>/qidiruv</code></li><li>Topics <code>/mavzular</code><ul style="margin-top:.3rem"><li>Topic page, e.g. Namoz</li></ul></li><li>Answer page <code>/javob/:id</code></li></ul></div>
+    <div class="tree"><h3>Ask</h3><ul><li>Ask a question <code>/savol-berish</code></li><li>Track by number <code>/kuzatish</code></li><li>My questions &amp; saved <code>/mening</code></li><li>Telegram bot</li></ul></div>
+    <div class="tree"><h3>Trust</h3><ul><li>Our scholars <code>/olimlar</code><ul style="margin-top:.3rem"><li>Scholar profile</li></ul></li><li>Methodology <code>/uslub</code></li><li>About, contact, donate</li></ul></div>
+    <div class="tree"><h3>Workspace (staff only)</h3><ul><li>Triage queue</li><li>My assignments</li><li>Review queue</li><li>Translations</li><li>Scholars &amp; topics (admin)</li><li>Reports</li></ul></div>
+  </div>
+</div></section>
+
+<!-- 8 MOCKUPS -->
+<section id="mockups"><div class="wide stack">
+  <div class="col stack" style="margin:0 auto; width:100%">
+    <span class="eyebrow">8 · Mockups</span>
+    <h2>Key screens</h2>
+    <p class="muted">Shown in Uzbek, the primary language. Questions, counts and scholar names are placeholders, and the sample answer illustrates layout only. It is not a ruling.</p>
+  </div>
+
+  <!-- Home -->
+  <div class="mock-label"><h3>A · Home: search first</h3><span class="muted">Desktop · F1, F2, F7</span></div>
+  <div class="screen">
+    <div class="chrome"><i></i><i></i><i></i><span class="addr">aqeedah.uz/uz</span></div>
+    <div class="app">
+      <div class="appbar">
+        <span class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="14" height="14"/><rect x="5" y="5" width="14" height="14" transform="rotate(45 12 12)"/></svg>Aqeedah</span>
+        <nav class="appnav"><span class="on">Bosh sahifa</span><span>Mavzular</span><span>Olimlar</span><span>Uslubimiz</span></nav>
+        <span class="spacer"></span>
+        <span class="lang"><span class="on">UZ</span><span>EN</span></span>
+        <span class="lang"><span class="on">Lot</span><span>Кир</span></span>
+        <span class="btn">Savol berish</span>
+      </div>
+      <div class="m-hero">
+        <div class="q">Savolingizga ishonchli javob toping</div>
+        <div class="searchbox"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span class="ph">safarda ro'za tutish</span><span class="kbd">/</span></div>
+        <span class="hint">Lotin yoki kirill yozuvida qidiring · 12 480 javob · o'zbek va ingliz tillarida</span>
+        <div class="chips"><span class="chip on">Hammasi</span><span class="chip">Namoz</span><span class="chip">Ro'za</span><span class="chip">Oila</span><span class="chip">Muomalot</span><span class="chip">Ayollar</span></div>
+      </div>
+      <div class="m-body">
+        <div>
+          <div class="m-h">Yangi javoblar</div>
+          <div class="qlist">
+            <div class="qitem"><b>Safardagi kishi Ramazonda ro'za tutmasa bo'ladimi?</b><span class="qmeta"><span class="cat">Ro'za</span><span>Ustoz A. Karimov</span><span>UZ · EN</span><span>2 kun oldin</span></span></div>
+            <div class="qitem"><b>Kartadan to'langan ish haqidan zakot qanday hisoblanadi?</b><span class="qmeta"><span class="cat">Zakot</span><span>Ustoz B. Rahimov</span><span>UZ</span><span>3 kun oldin</span></span></div>
+            <div class="qitem"><b>Can I pray in an office with pictures on the wall?</b><span class="qmeta"><span class="cat">Namoz</span><span>Ustoz D. Aliyev</span><span>EN · UZ</span><span>4 kun oldin</span></span></div>
+            <div class="qitem"><b>Nikohdan oldin qaynona-qaynota bilan uchrashish odobi</b><span class="qmeta"><span class="cat">Oila</span><span>Ustoza M. Yusupova</span><span>UZ</span><span>5 kun oldin</span></span></div>
+          </div>
+        </div>
+        <div>
+          <div class="m-h">Mavzular</div>
+          <div class="cats">
+            <div class="cat-tile"><span>Aqida</span><span>1 204</span></div><div class="cat-tile"><span>Taharat</span><span>986</span></div>
+            <div class="cat-tile"><span>Namoz</span><span>2 310</span></div><div class="cat-tile"><span>Ro'za</span><span>874</span></div>
+            <div class="cat-tile"><span>Oila</span><span>1 652</span></div><div class="cat-tile"><span>Muomalot</span><span>1 118</span></div>
+          </div>
+          <div class="askcard"><b>Javob topa olmadingizmi?</b><span>Olimlarimizga savol yuboring. Javob tayyor bo'lganda Telegram orqali xabar beramiz.</span><span><span class="btn small">Savol berish</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Answer page -->
+  <div class="mock-label" style="margin-top:var(--s5)"><h3>B · Answer page</h3><span class="muted">Desktop · F5, F6, F8</span></div>
+  <div class="screen">
+    <div class="chrome"><i></i><i></i><i></i><span class="addr">aqeedah.uz/uz/javob/24817</span></div>
+    <div class="app">
+      <div class="ans">
+        <div>
+          <div class="crumbs">Mavzular › Ro'za › Ro'zani tutmaslik uzrlari</div>
+          <h4>Safardagi kishi Ramazonda ro'za tutmasa bo'ladimi?</h4>
+          <div class="qmeta"><span>Savol № AQ-24817</span><span>Hanafiy mazhabi</span><span>Javob: 18.10.2026</span></div>
+          <p class="asked">"Ishim tufayli Ramazonda Toshkentdan Samarqandga tez-tez boraman. Yo'lda ro'za tutmasam bo'ladimi?" (anonim)</p>
+          <div class="short"><div class="m-h">Qisqa javob</div><p>Placeholder for the scholar's short answer, two or three sentences, readable on its own. A reader who stops here should still have the full answer.</p></div>
+          <div class="m-h" style="margin-top:14px">Dalillar</div>
+          <div class="ayah"><div class="ar" lang="ar">فَمَن كَانَ مِنكُم مَّرِيضًا أَوْ عَلَىٰ سَفَرٍ فَعِدَّةٌ مِّنْ أَيَّامٍ أُخَرَ</div><div class="tr">"Sizlardan kim bemor yoki safarda bo'lsa, boshqa kunlarda (o'sha kunlar) sanog'ini (tutadi)."</div><div class="ref">Baqara surasi, 184-oyat</div></div>
+          <p style="font-size:.85rem">Detailed explanation: hadith with collection and grading, classical references, and practical cases.</p>
+          <div class="madhab"><div><b>Hanafiy</b>Main position (followed here)</div><div><b>Shofeiy</b>Shown where it differs</div><div><b>Molikiy / Hanbaliy</b>Shown where it differs</div></div>
+        </div>
+        <aside class="side">
+          <div><div class="m-h">Javob berdi</div><div class="scholar"><span class="avatar">AK</span><div><b>Ustoz A. Karimov</b><div class="hint">Fiqh, Toshkent islom instituti</div></div></div></div>
+          <div class="seal"><b>✓ Tekshirildi</b><span>Senior reviewer: Ustoz H. Nazarov</span></div>
+          <dl class="facts"><dt>Til</dt><dd>UZ · <a href="#mockups">EN version</a></dd><dt>Yozuv</dt><dd>Lotin · <a href="#mockups">Кирилл</a></dd><dt>O'qildi</dt><dd>3 412</dd></dl>
+          <div><div class="m-h">O'xshash savollar</div><div class="qlist"><div class="qitem"><b style="font-size:.82rem">Qazo ro'zalarni ketma-ket tutish shartmi?</b></div><div class="qitem"><b style="font-size:.82rem">Safar masofasi qancha hisoblanadi?</b></div></div></div>
+          <span class="btn ghost small">Ulashish · Saqlash</span>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phones -->
+  <div class="mock-label" style="margin-top:var(--s5)"><h3>C · Asking and tracking on a phone</h3><span class="muted">Mobile · F2, F3, F4, F9</span></div>
+  <div class="phones">
+    <div class="phone"><div class="notch"></div><div class="scr">
+      <div class="ph-top"><b>Savol berish</b><span class="hint">2 / 3</span></div>
+      <div class="ph-body">
+        <div class="stepper"><i class="on"></i><i class="on"></i><i></i></div>
+        <div class="field"><label>Mavzu</label><span class="val">Ro'za</span></div>
+        <div class="field"><label>Savolingiz</label><span class="val">Safarda ro'za tutmasam, keyin qanday qazo qilaman?</span></div>
+        <div class="similar"><b>Shu savolga o'xshash 3 ta javob bor</b><a href="#mockups">Safardagi kishi Ramazonda ro'za tutmasa bo'ladimi?</a><a href="#mockups">Qazo ro'zalarni ketma-ket tutish shartmi?</a></div>
+        <div class="toggle"><span>Ismim ko'rsatilmasin (anonim)</span><span class="sw on"></span></div>
+        <div class="toggle"><span>Javobni ommaga e'lon qilishga roziman</span><span class="sw on"></span></div>
+        <div class="toggle"><span>Javobni Telegramda olish</span><span class="sw on"></span></div>
+      </div>
+      <div class="ph-foot"><span class="btn">Davom etish</span></div>
+    </div></div>
+
+    <div class="phone"><div class="notch"></div><div class="scr">
+      <div class="ph-top"><b>Mening savolim</b><span class="lang"><span class="on">UZ</span><span>EN</span></span></div>
+      <div class="ph-body">
+        <div class="ticket"><span>№ AQ-24903</span><span>Ro'za</span></div>
+        <b style="font-size:.88rem">Safarda ro'za tutmasam, keyin qanday qazo qilaman?</b>
+        <div class="timeline">
+          <div class="tl done"><span class="dot"></span><div>Qabul qilindi<small>24 okt, 21:14</small></div></div>
+          <div class="tl done"><span class="dot"></span><div>Olimga yuborildi<small>25 okt, 09:02 · Ro'za bo'limi</small></div></div>
+          <div class="tl now"><span class="dot"></span><div>Javob yozilmoqda<small>Odatda 3–5 kun</small></div></div>
+          <div class="tl"><span class="dot"></span><div>Tekshiruvda</div></div>
+          <div class="tl"><span class="dot"></span><div>Javob tayyor</div></div>
+        </div>
+        <div class="tg"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:var(--lapis);flex:none"><path d="M21 4L3 11l6 2 2 6 3-4 5 4z"/></svg><span>Javob tayyor bo'lgach, Telegram orqali xabar olasiz.</span></div>
+      </div>
+      <div class="ph-foot"><span class="btn ghost" style="width:100%;justify-content:center">Qo'shimcha savol (1 marta)</span></div>
+    </div></div>
+  </div>
+
+  <!-- Scholar desk -->
+  <div class="mock-label" style="margin-top:var(--s5)"><h3>D · Scholar workspace</h3><span class="muted">Desktop · F10, F8</span></div>
+  <div class="screen">
+    <div class="chrome"><i></i><i></i><i></i><span class="addr">aqeedah.uz/ishxona/tayinlangan</span></div>
+    <div class="app desk">
+      <div class="desk-nav">
+        <span class="m-h" style="margin:0 0 6px">Ishxona</span>
+        <div><span>Saralash</span><span>38</span></div>
+        <div class="on"><span>Menga tayinlangan</span><span>7</span></div>
+        <div><span>Tekshiruv</span><span>4</span></div>
+        <div><span>Tarjima</span><span>11</span></div>
+        <div><span>Chop etilgan</span><span>612</span></div>
+      </div>
+      <div class="queue">
+        <div class="qrow sel"><span><span class="status st-urgent">Shoshilinch</span></span><b>Marhumning qarzi bo'lsa janoza oldidan nima qilinadi?</b><span class="qmeta"><span>AQ-24911</span><span>Janoza</span><span>UZ</span></span></div>
+        <div class="qrow"><span><span class="status st-new">Yangi</span></span><b>Safarda ro'za tutmasam, keyin qanday qazo qilaman?</b><span class="qmeta"><span>AQ-24903</span><span>Ro'za</span><span>UZ</span></span></div>
+        <div class="qrow"><span><span class="status st-review">Qaytarildi</span></span><b>Is crypto staking allowed?</b><span class="qmeta"><span>AQ-24850</span><span>Muomalot</span><span>EN</span></span></div>
+        <div class="qrow"><span><span class="status st-tr">Tarjima kutilmoqda</span></span><b>Ofisda namoz o'qish joyi</b><span class="qmeta"><span>AQ-24788</span><span>Namoz</span><span>UZ → EN</span></span></div>
+      </div>
+      <div class="editor">
+        <div class="qmeta"><span>AQ-24911</span><span>Anonim · Toshkent</span><span>Ommaga: ha</span></div>
+        <div class="dup"><b>Possible duplicate:</b> AQ-19022 "Qarzdor marhum uchun nima qilinadi?" <a href="#mockups">Link instead of answering</a></div>
+        <div class="ed-block"><label>Qisqa javob</label><span class="muted">Two or three sentences…</span></div>
+        <div class="ed-block"><label>Batafsil javob va dalillar</label><span class="muted">Explanation…</span><div class="ed-tools"><span class="btn ghost small">+ Oyat</span><span class="btn ghost small">+ Hadis</span><span class="btn ghost small">+ Manba</span><span class="btn ghost small">+ Mazhablar</span></div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="btn">Tekshiruvga yuborish</span><span class="btn ghost">Moderatorga qaytarish</span></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 9 DECISIONS -->
+<section id="decisions"><div class="col">
+  <span class="eyebrow">9 · Over to you</span>
+  <h2>Decisions I need from you</h2>
+  <p class="muted">Each has my recommendation. Reply with the number and your choice, or anything else you want to change.</p>
+  <div>
+    <div class="dec"><span class="id">D1</span><div><b>Madhhab and creed</b><p class="rec">Recommend: <b>Hanafi fiqh, Maturidi creed</b> as the default, as in Uzbekistan, showing other madhhabs' views where they differ.</p></div></div>
+    <div class="dec"><span class="id">D2</span><div><b>Relationship with the Muslim Board</b><p class="rec">Recommend: <b>seek their endorsement or work with Board-approved scholars</b>, and check registration rules with the Committee for Religious Affairs before launch. I can't give legal advice on this.</p></div></div>
+    <div class="dec"><span class="id">D3</span><div><b>Who are the first scholars?</b><p class="rec">Recommend: <b>at least 3 scholars and 1 senior reviewer</b> confirmed before building, including one woman for the women's desk later.</p></div></div>
+    <div class="dec"><span class="id">D4</span><div><b>Default Uzbek script</b><p class="rec">Recommend: <b>Latin by default</b>, with a one-tap Cyrillic switch, since many older readers still use Cyrillic.</p></div></div>
+    <div class="dec"><span class="id">D5</span><div><b>Must askers register?</b><p class="rec">Recommend: <b>no</b>. Allow Telegram or anonymous asking with a question number, and limit to 1 question per day to protect scholars' time.</p></div></div>
+    <div class="dec"><span class="id">D6</span><div><b>Use of AI</b><p class="rec">Recommend: <b>no AI at launch</b>. In Phase 2, add AI search that only quotes reviewed answers (F14).</p></div></div>
+    <div class="dec"><span class="id">D7</span><div><b>Name and domain</b><p class="rec">Recommend: keep <b>"Aqeedah"</b> as the working name for now. A name that also says "questions" (for example a <i>savol</i>-based name) may be easier for Uzbek users to find. Your call.</p></div></div>
+    <div class="dec"><span class="id">D8</span><div><b>Funding</b><p class="rec">Recommend: <b>free for everyone</b>, supported by donations and sponsors. No paid access to scholars.</p></div></div>
+  </div>
+</div></section>
+
+<section id="sources"><div class="col">
+  <span class="eyebrow">Sources</span>
+  <ul class="sources">
+    <li><a href="https://savollar.islom.uz/">savollar.islom.uz</a></li>
+    <li><a href="https://thediplomat.com/2022/08/uzbekistans-islamic-revival-online/">The Diplomat: Uzbekistan's Islamic revival, online (2022)</a></li>
+    <li><a href="https://muslim.uz/oz">muslim.uz</a></li>
+    <li><a href="https://www.uzbekembassy.in/?p=36917">Muslim Board call center (2026)</a></li>
+    <li><a href="https://uza.uz/ar/posts/poyavilas-vozmozhnost-obratitsya-s-voprosom-napryamuyu-k-muftiyu-uzbekistana_472475">UzA: question bot to the Mufti (2023)</a></li>
+    <li><a href="https://anhor.uz/uzl/news/musulmonlar-idorasi-chatgptdan-diniy-savollarga/">Anhor: Board warns against ChatGPT for religious answers</a></li>
+    <li><a href="https://kun.uz/en/news/2026/05/08/authorities-launch-telegram-bot-flagging-banned-religious-content">Kun.uz: state bot for religious content (May 2026)</a></li>
+    <li><a href="https://kun.uz/news/2019/09/16/odinaxon-muhammad-sodiq-har-bir-musulmon-boshqa-musulmonni-ozidan-ustun-qoyishi-kerak-muslimaatuz-veb-saytining-hisobot-anjumani-xususida">Kun.uz: muslimaat.uz report (2019)</a></li>
+    <li><a href="https://play.google.com/store/apps/details?id=uz.islom&hl=en_US">Islom.uz app on Google Play</a></li>
+    <li><a href="https://islam.uz/">islam.uz (Russian)</a></li>
+    <li><a href="https://ai.umma.ru/en/">Islamic AI by umma.ru</a></li>
+    <li><a href="https://azan.info/site">Azan.info</a></li>
+    <li><a href="https://rus.azattyq-ruhy.kz/news/107345-imam-ai-bystrye-otvety-na-voprosy-dumk-anonsiroval-zapusk-ii-proekta">DUMK Imam AI announcement</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/IslamQA.info">Wikipedia: IslamQA.info</a></li>
+    <li><a href="https://islamqa.info/ru/about-us">IslamQA.info about page</a></li>
+    <li><a href="https://seekersguidance.org/uncategorized/can-i-rely-on-an-answer-from-seekersguidance">SeekersGuidance: can I rely on an answer?</a></li>
+    <li><a href="https://islamqa.org/category/hanafi/">IslamQA.org Hanafi</a></li>
+    <li><a href="https://www.islamweb.net/en/">Islamweb</a></li>
+    <li><a href="https://thepeninsulaqatar.com/article/26/07/2016/92-million-pages-surfed-on-islamweb.net-in-two-months">The Peninsula: Islamweb stats (2016)</a></li>
+    <li><a href="https://dar-alifta.org/en/article/details/10887/fatwapro-trusted-digital-guidance-for-non-arabic-speaking-muslims-a-year-in-revi">Dar al-Ifta: FatwaPro year in review</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Darulifta-Deoband.com">Wikipedia: Darulifta-Deoband.com</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Askimam">Wikipedia: Askimam</a></li>
+    <li><a href="https://aboutislam.net/live-session/ask-scholar-live-facebook-fatwa-session/">AboutIslam live fatwa session</a></li>
+    <li><a href="https://www.fatwaqa.com/en">FatwaQA</a></li>
+    <li><a href="https://askmuftionline.com/">Ask Mufti Online</a></li>
+  </ul>
+</div></section>
+
+<footer><div class="col muted">Proposal only. Nothing has been built yet. Reply in the project thread with changes, and the next version will reflect them.</div></footer>
+</body>
+</html>
