@@ -1,0 +1,231 @@
+import { toCyrillic } from "@/lib/translit";
+
+export const LANGS = ["uz", "en"] as const;
+export type Lang = (typeof LANGS)[number];
+export type Script = "lat" | "cyr";
+
+export function isLang(v: string): v is Lang {
+  return (LANGS as readonly string[]).includes(v);
+}
+
+const uz = {
+  brand: "Aqeedah",
+  tagline: "Islom haqidagi savollaringizga ishonchli javoblar",
+  nav_home: "Bosh sahifa",
+  nav_topics: "Mavzular",
+  nav_scholars: "Olimlar",
+  nav_method: "Uslubimiz",
+  nav_track: "Savolim holati",
+  ask: "Savol berish",
+  hero: "Savolingizga ishonchli javob toping",
+  search_ph: "Masalan: safarda ro'za tutish",
+  search_btn: "Qidirish",
+  search_hint: "Lotin yoki kirill yozuvida yozishingiz mumkin. Javoblar o'zbek va ingliz tillarida.",
+  answers_count: "ta javob",
+  latest: "Yangi javoblar",
+  topics: "Mavzular",
+  all: "Hammasi",
+  not_found_q: "Javob topa olmadingizmi?",
+  not_found_body: "Olimlarimizga savol yuboring. Savol raqami va kodi orqali holatini kuzatib borasiz.",
+  empty_archive: "Hozircha chop etilgan javoblar yo'q. Birinchi savolni siz bering.",
+  results_for: "Natijalar",
+  no_results: "Bu so'rov bo'yicha javob topilmadi. Boshqacha so'z bilan qidirib ko'ring yoki savol yuboring.",
+  short_answer: "Qisqa javob",
+  details: "Batafsil javob va dalillar",
+  answered_by: "Javob berdi",
+  reviewed_by: "Tekshirdi",
+  reviewed: "Tekshirilgan javob",
+  translated_by: "Tarjima qildi",
+  similar: "O'xshash savollar",
+  question_no: "Savol",
+  madhhab: "Mazhab",
+  hanafi: "Hanafiy",
+  published: "Chop etildi",
+  views: "O'qildi",
+  language: "Til",
+  only_other_lang: "Bu javob hozircha faqat inglizcha mavjud.",
+  other_lang_version: "English version",
+  asked: "Savol",
+  ask_title: "Olimlarga savol yuborish",
+  ask_intro: "Savolingizni aniq va qisqa yozing. Ismingiz, manzilingiz va boshqa shaxsiy ma'lumotlar chop etilmaydi.",
+  f_topic: "Mavzu",
+  f_topic_none: "Mavzuni tanlang",
+  f_question: "Savolingiz",
+  f_question_help: "Kamida 15 belgi. Vaziyatni tushuntiring, lekin ismlarni yozmang.",
+  f_lang: "Javob qaysi tilda kerak?",
+  f_anon: "Ismim ko'rsatilmasin (anonim)",
+  f_name: "Ismingiz (ixtiyoriy)",
+  f_public: "Javobni boshqalar ham o'qishi uchun chop etishga roziman",
+  f_public_help: "Rozilik bermasangiz, javobni faqat siz savol raqami va kodi bilan ko'rasiz.",
+  f_urgent: "Shoshilinch (janoza, iddat yoki vaqti o'tib ketadigan ibodat)",
+  f_contact: "Email yoki Telegram (ixtiyoriy)",
+  f_contact_help: "Olim aniqlik kiritishi kerak bo'lsa, siz bilan bog'lanish uchun. Chop etilmaydi.",
+  f_email: "Email",
+  f_telegram: "Telegram foydalanuvchi nomi",
+  similar_found: "Shu savolga o'xshash javoblar bor:",
+  submit: "Savolni yuborish",
+  sending: "Yuborilmoqda...",
+  sent_title: "Savolingiz qabul qilindi",
+  sent_body: "Ushbu raqam va kodni saqlab qo'ying. Ular orqali savolingiz holatini va javobni ko'rasiz.",
+  number: "Savol raqami",
+  code: "Kod",
+  copy: "Nusxa olish",
+  copied: "Nusxa olindi",
+  go_track: "Holatni ko'rish",
+  err_daily: "Bu email yoki Telegram orqali bugun savol yuborilgan. Iltimos, ertaga qayta urinib ko'ring.",
+  err_generic: "Savol yuborilmadi. Internet aloqasini tekshirib, qayta urinib ko'ring.",
+  err_short: "Savol juda qisqa. Kamida 15 belgi yozing.",
+  track_title: "Savolim holati",
+  track_intro: "Savol raqami va kodini kiriting.",
+  track_btn: "Ko'rish",
+  track_not_found: "Bunday savol topilmadi. Raqam va kodni tekshiring.",
+  my_questions: "Shu qurilmadan yuborilgan savollar",
+  st_received: "Qabul qilindi",
+  st_assigned: "Olimga yuborildi",
+  st_answering: "Javob yozilmoqda",
+  st_in_review: "Tekshiruvda",
+  st_answered: "Javob tayyor",
+  st_declined: "Javob berilmadi",
+  st_duplicate: "Avval javob berilgan",
+  read_answer: "Javobni o'qish",
+  private_answer: "Sizning javobingiz (chop etilmagan)",
+  decline_reason: "Sabab",
+  scholars_title: "Olimlarimiz",
+  scholars_intro: "Har bir javobni bir olim yozadi va boshqa katta olim tekshiradi.",
+  no_scholars: "Olimlar ro'yxati tez orada e'lon qilinadi.",
+  scholar_answers: "Javoblari",
+  topic_empty: "Bu mavzuda hozircha chop etilgan javob yo'q.",
+  method_title: "Uslubimiz",
+  footer_note: "Aqeedah olimlar javob beradigan savol-javob platformasi. Javoblar shaxsiy maslahat o'rnini bosmaydi: murakkab masalalarda mahallangiz imomiga murojaat qiling.",
+  footer_rights: "Barcha javoblar olimlar tomonidan tekshiriladi.",
+  script_lat: "Lotin",
+  script_cyr: "Кирилл",
+  back: "Orqaga",
+};
+
+type Dict = typeof uz;
+
+const en: Dict = {
+  brand: "Aqeedah",
+  tagline: "Trusted answers to your questions about Islam",
+  nav_home: "Home",
+  nav_topics: "Topics",
+  nav_scholars: "Scholars",
+  nav_method: "Our method",
+  nav_track: "Track a question",
+  ask: "Ask a question",
+  hero: "Find a trusted answer to your question",
+  search_ph: "For example: fasting while travelling",
+  search_btn: "Search",
+  search_hint: "Answers are in English and Uzbek. Uzbek search works in Latin or Cyrillic.",
+  answers_count: "answers",
+  latest: "Latest answers",
+  topics: "Topics",
+  all: "All",
+  not_found_q: "Didn't find your answer?",
+  not_found_body: "Send your question to our scholars. You can follow it with its number and code.",
+  empty_archive: "No answers have been published yet. Be the first to ask.",
+  results_for: "Results",
+  no_results: "No answers matched. Try other words, or send your question.",
+  short_answer: "Short answer",
+  details: "Detailed answer and evidence",
+  answered_by: "Answered by",
+  reviewed_by: "Reviewed by",
+  reviewed: "Reviewed answer",
+  translated_by: "Translated by",
+  similar: "Similar questions",
+  question_no: "Question",
+  madhhab: "Madhhab",
+  hanafi: "Hanafi",
+  published: "Published",
+  views: "Read",
+  language: "Language",
+  only_other_lang: "This answer is only available in Uzbek for now.",
+  other_lang_version: "O'zbekcha versiya",
+  asked: "Question",
+  ask_title: "Send a question to our scholars",
+  ask_intro: "Write your question clearly and briefly. Your name, location and other personal details are never published.",
+  f_topic: "Topic",
+  f_topic_none: "Choose a topic",
+  f_question: "Your question",
+  f_question_help: "At least 15 characters. Explain the situation, but leave out names.",
+  f_lang: "Which language should the answer be in?",
+  f_anon: "Don't show my name (anonymous)",
+  f_name: "Your name (optional)",
+  f_public: "I agree to publish the answer so others can read it",
+  f_public_help: "If you don't agree, only you can read the answer, using your question number and code.",
+  f_urgent: "Urgent (funeral, iddah, or an act of worship that will soon be missed)",
+  f_contact: "Email or Telegram (optional)",
+  f_contact_help: "So a scholar can reach you if something needs clarifying. Never published.",
+  f_email: "Email",
+  f_telegram: "Telegram username",
+  similar_found: "These answers look similar to your question:",
+  submit: "Send question",
+  sending: "Sending...",
+  sent_title: "Your question has been received",
+  sent_body: "Keep this number and code. You'll need them to see the status and read the answer.",
+  number: "Question number",
+  code: "Code",
+  copy: "Copy",
+  copied: "Copied",
+  go_track: "See status",
+  err_daily: "A question was already sent today from this email or Telegram. Please try again tomorrow.",
+  err_generic: "Your question wasn't sent. Check your connection and try again.",
+  err_short: "The question is too short. Write at least 15 characters.",
+  track_title: "Track a question",
+  track_intro: "Enter your question number and code.",
+  track_btn: "Show",
+  track_not_found: "No question matches. Check the number and code.",
+  my_questions: "Questions sent from this device",
+  st_received: "Received",
+  st_assigned: "Sent to a scholar",
+  st_answering: "Being answered",
+  st_in_review: "In review",
+  st_answered: "Answered",
+  st_declined: "Not answered",
+  st_duplicate: "Already answered",
+  read_answer: "Read the answer",
+  private_answer: "Your answer (not published)",
+  decline_reason: "Reason",
+  scholars_title: "Our scholars",
+  scholars_intro: "Every answer is written by one scholar and approved by a second, senior scholar.",
+  no_scholars: "The list of scholars will be published soon.",
+  scholar_answers: "Answers",
+  topic_empty: "No answers have been published in this topic yet.",
+  method_title: "Our method",
+  footer_note: "Aqeedah is a question-and-answer platform answered by scholars. Answers don't replace personal advice: for complex matters, consult your local imam.",
+  footer_rights: "Every answer is reviewed by scholars.",
+  script_lat: "Lotin",
+  script_cyr: "Кирилл",
+  back: "Back",
+};
+
+const DICTS: Record<Lang, Dict> = { uz, en };
+export type Key = keyof Dict;
+
+// For Uzbek pages in Cyrillic mode, every string (UI and content) goes through tx().
+export function makeT(lang: Lang, script: Script) {
+  const cyr = lang === "uz" && script === "cyr";
+  const tx = (s: string | null | undefined) => (s ? (cyr ? toCyrillic(s) : s) : "");
+  const t = (k: Key) => tx(DICTS[lang][k]);
+  return { t, tx, lang, script, cyr };
+}
+
+export function dict(lang: Lang, script: Script, keys: Key[]) {
+  const { t } = makeT(lang, script);
+  return Object.fromEntries(keys.map((k) => [k, t(k)])) as Record<Key, string>;
+}
+
+export function otherLang(lang: Lang): Lang {
+  return lang === "uz" ? "en" : "uz";
+}
+
+export function fmtDate(iso: string | null | undefined, lang: Lang) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (lang === "uz") {
+    const p = (n: number) => String(n).padStart(2, "0");
+    return `${p(d.getUTCDate())}.${p(d.getUTCMonth() + 1)}.${d.getUTCFullYear()}`;
+  }
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
