@@ -220,3 +220,19 @@ revoke execute on function public.my_role(), public.is_staff() from public, anon
 grant execute on function public.my_role(), public.is_staff() to authenticated;
 grant execute on function public.submit_question, public.track_question, public.search_answers, public.similar_questions,
   public.bump_views, public.uz_norm, public.question_is_public to anon, authenticated;
+
+-- Only admins may change anyone's role or public flag (checked before the update applies).
+create or replace function public.guard_profile_role() returns trigger
+language plpgsql security definer set search_path = '' as $$
+declare caller_role public.staff_role;
+begin
+  if auth.uid() is null then return new; end if;
+  if new.role is distinct from old.role or new.is_public is distinct from old.is_public then
+    select role into caller_role from public.profiles where id = auth.uid();
+    if caller_role is distinct from 'admin' then raise exception 'only admins can change roles'; end if;
+    if new.id = auth.uid() and new.role is distinct from old.role then raise exception 'admins cannot change their own role'; end if;
+  end if;
+  return new;
+end $$;
+revoke execute on function public.guard_profile_role() from public, anon, authenticated;
+create trigger profiles_guard_role before update on public.profiles for each row execute function public.guard_profile_role();
