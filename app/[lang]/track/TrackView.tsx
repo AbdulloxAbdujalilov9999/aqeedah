@@ -3,34 +3,31 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { loadTickets, type Ticket } from "@/lib/tickets";
-import { toCyrillic } from "@/lib/translit";
 import { fmtDate } from "@/lib/i18n";
-import AnswerBody from "@/components/AnswerBody";
 
 type Result = {
-  number: string;
+  id: number;
   status: string;
-  body: string;
   created_at: string;
+  publish_consent: boolean;
   decline_reason: string | null;
   events: { status: string; at: string }[];
   answer_question_id: number | null;
-  private_answer: { title: string; short_answer: string; body: string } | null;
 };
 
 const ORDER = ["received", "assigned", "answering", "in_review", "answered"];
 
-export default function TrackView({ lang, cyr, d, n, c }: { lang: "uz" | "en"; cyr: boolean; d: Record<string, string>; n: string; c: string }) {
-  const [num, setNum] = useState(n);
-  const [code, setCode] = useState(c);
+export default function TrackView({ lang, d, initialId }: { lang: "uz" | "en"; d: Record<string, string>; initialId: string }) {
+  const [id, setId] = useState(initialId);
   const [res, setRes] = useState<Result | null>(null);
   const [msg, setMsg] = useState("");
   const [tickets, setTickets] = useState<Ticket[]>([]);
-  const tx = (s: string) => (cyr ? toCyrillic(s) : s);
 
-  const look = useCallback(async (nn: string, cc: string) => {
+  const look = useCallback(async (raw: string) => {
     setMsg("");
-    const { data, error } = await supabaseBrowser().rpc("track_question", { p_number: nn, p_code: cc });
+    const n = Number(String(raw).replace(/\D/g, ""));
+    if (!n) { setMsg(d.track_not_found); setRes(null); return; }
+    const { data, error } = await supabaseBrowser().rpc("question_status", { p_id: n });
     if (error) { setMsg(d.err_generic); setRes(null); return; }
     if (!data) { setMsg(d.track_not_found); setRes(null); return; }
     setRes(data as Result);
@@ -38,8 +35,8 @@ export default function TrackView({ lang, cyr, d, n, c }: { lang: "uz" | "en"; c
 
   useEffect(() => {
     setTickets(loadTickets());
-    if (n && c) void look(n, c);
-  }, [n, c, look]);
+    if (initialId) void look(initialId);
+  }, [initialId, look]);
 
   const label = (s: string) => d[`st_${s}`] ?? s;
   const finalBad = res && (res.status === "declined" || res.status === "duplicate");
@@ -47,20 +44,21 @@ export default function TrackView({ lang, cyr, d, n, c }: { lang: "uz" | "en"; c
 
   return (
     <div className="stack-lg">
-      <form className="stack card" onSubmit={(e) => { e.preventDefault(); void look(num, code); }}>
+      <form className="stack card" onSubmit={(e) => { e.preventDefault(); void look(id); }}>
         <p className="muted">{d.track_intro}</p>
-        <div className="grid-2">
-          <label className="field"><span>{d.number}</span><input id="num" type="text" placeholder="AQ-1001" value={num} onChange={(e) => setNum(e.target.value)} required /></label>
-          <label className="field"><span>{d.code}</span><input id="code" type="text" placeholder="A1B2C3" value={code} onChange={(e) => setCode(e.target.value)} required /></label>
+        <div className="row">
+          <label className="field" style={{ flex: "1 1 200px" }}>
+            <span>{d.number}</span>
+            <input id="qid" type="text" inputMode="numeric" placeholder="1001" value={id} onChange={(e) => setId(e.target.value)} required />
+          </label>
+          <button className="btn" type="submit" style={{ alignSelf: "flex-end" }}>{d.track_btn}</button>
         </div>
-        <div><button className="btn" type="submit">{d.track_btn}</button></div>
         {msg && <div className="alert err" role="alert">{msg}</div>}
       </form>
 
       {res && (
         <section className="stack card">
-          <div className="meta"><span className="tag">{res.number}</span><span>{fmtDate(res.created_at, lang)}</span></div>
-          <p style={{ fontWeight: 600 }}>{res.body}</p>
+          <div className="meta"><span className="tag">№ {res.id}</span><span>{fmtDate(res.created_at, lang)}</span></div>
           <div className="timeline">
             {ORDER.map((s, i) => {
               const ev = res.events.find((e) => e.status === s);
@@ -76,17 +74,9 @@ export default function TrackView({ lang, cyr, d, n, c }: { lang: "uz" | "en"; c
               <div className="tl bad"><span className="dot" /><div>{label(res.status)}{res.decline_reason && <small>{d.decline_reason}: {res.decline_reason}</small>}</div></div>
             )}
           </div>
-          {res.answer_question_id && (res.status === "answered" || res.status === "duplicate") && !res.private_answer && (
+          {res.answer_question_id ? (
             <div><Link className="btn" href={`/${lang}/answer/${res.answer_question_id}`}>{d.read_answer}</Link></div>
-          )}
-          {res.private_answer && (
-            <div className="stack">
-              <span className="label">{d.private_answer}</span>
-              <h2>{tx(res.private_answer.title)}</h2>
-              <div className="short"><span className="label">{d.short_answer}</span><p>{tx(res.private_answer.short_answer)}</p></div>
-              <AnswerBody body={res.private_answer.body} tx={tx} />
-            </div>
-          )}
+          ) : !res.publish_consent && <p className="alert info">{d.private_note}</p>}
         </section>
       )}
 
@@ -95,9 +85,9 @@ export default function TrackView({ lang, cyr, d, n, c }: { lang: "uz" | "en"; c
           <span className="label">{d.my_questions}</span>
           <div className="qlist">
             {tickets.map((tk) => (
-              <div className="qitem" key={tk.number}>
-                <button type="button" className="btn ghost sm" style={{ alignSelf: "flex-start" }} onClick={() => { setNum(tk.number); setCode(tk.code); void look(tk.number, tk.code); }}>
-                  {tk.number} · {tk.code}
+              <div className="qitem" key={tk.id}>
+                <button type="button" className="btn ghost sm" style={{ alignSelf: "flex-start" }} onClick={() => { setId(String(tk.id)); void look(String(tk.id)); }}>
+                  № {tk.id}
                 </button>
                 <span className="help">{tk.excerpt}</span>
               </div>

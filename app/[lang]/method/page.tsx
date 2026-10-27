@@ -11,7 +11,7 @@ const CONTENT = {
     ["Ikki til", "Javob savol berilgan tilda yoziladi. So‘ng tarjimon ikkinchi tilga o‘giradi va olim tarjimani tasdiqlaydi."],
     ["Nimalarga javob bermaymiz", "Aniq shaxslar haqida hukm chiqarmaymiz, siyosiy bahslarga kirmaymiz va ajrim, meros nizolari kabi tomonlarni eshitishni talab qiladigan masalalarda yakuniy hukm bermaymiz. Bunday hollarda mahalla imomiga yoki O‘zbekiston musulmonlari idorasi Fatvo markaziga murojaat qilishni tavsiya qilamiz."],
     ["Sun’iy intellekt", "Javoblarni sun’iy intellekt yozmaydi. Barcha javoblarni tirik olimlar yozadi va tekshiradi."],
-    ["Maxfiylik", "Ismingiz, aloqa ma’lumotlaringiz va savoldagi shaxsiy tafsilotlar chop etilmaydi. Javobni chop etishga rozilik bermasangiz, uni faqat siz savol raqami va kodi orqali o‘qiysiz."],
+    ["Maxfiylik", "Ismingiz, telefoningiz, Telegram username va savoldagi shaxsiy tafsilotlarni faqat adminlar ko‘radi, ular saytda chop etilmaydi. Javobni chop etishga rozilik bermasangiz, javob sizga telefon yoki Telegram orqali yuboriladi."],
   ],
   en: [
     ["Creed and madhhab", "Aqeedah follows Ahl al-Sunnah wa al-Jama‘ah: the Maturidi school in creed and the Hanafi school in fiqh, as the Muslims of Uzbekistan have for centuries. Where other madhhabs differ, we present their views with respect."],
@@ -19,7 +19,7 @@ const CONTENT = {
     ["Two languages", "Answers are written in the language the question was asked in. A translator then produces the other language, and a scholar approves the translation."],
     ["What we don't answer", "We don't pass judgement on named individuals, take part in political disputes, or give final rulings in matters that require hearing both sides, such as divorce or inheritance disputes. For those, we recommend your local imam or the Fatwa Center of the Muslim Board of Uzbekistan."],
     ["Artificial intelligence", "AI does not write our answers. Every answer is written and reviewed by living scholars."],
-    ["Privacy", "Your name, contact details and personal details in your question are never published. If you don't agree to publishing, only you can read the answer, using your question number and code."],
+    ["Privacy", "Only our admins see your name, phone number, Telegram username and any personal details in your question; they are never published. If you don't agree to publishing, the answer is sent to you by phone or Telegram."],
   ],
 } as const;
 

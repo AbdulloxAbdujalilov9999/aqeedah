@@ -1,7 +1,7 @@
 "use client";
 // Remembers question numbers sent from this browser. Optional convenience only.
-export type Ticket = { number: string; code: string; at: string; excerpt: string };
-const KEY = "aqeedah.tickets";
+export type Ticket = { id: number; at: string; excerpt: string };
+const KEY = "aqeedah.questions";
 
 export function loadTickets(): Ticket[] {
   try {
@@ -13,7 +13,7 @@ export function loadTickets(): Ticket[] {
 
 export function saveTicket(t: Ticket) {
   try {
-    const list = [t, ...loadTickets().filter((x) => x.number !== t.number)].slice(0, 20);
+    const list = [t, ...loadTickets().filter((x) => x.id !== t.id)].slice(0, 20);
     localStorage.setItem(KEY, JSON.stringify(list));
   } catch {
     /* storage unavailable */

@@ -16,6 +16,7 @@ export default async function LangLayout({ children, params }: { children: React
         <div className="wrap">
           <Link href={`/${lang}`} className="brand"><Logo />{t("brand")}</Link>
           <nav className="nav" aria-label="Main">
+            <Link href={`/${lang}/search`}>{t("nav_search")}</Link>
             <Link href={`/${lang}/topics`}>{t("nav_topics")}</Link>
             <Link href={`/${lang}/scholars`}>{t("nav_scholars")}</Link>
             <Link href={`/${lang}/method`}>{t("nav_method")}</Link>
@@ -37,7 +38,6 @@ export default async function LangLayout({ children, params }: { children: React
           <p className="row">
             <span>© {new Date().getFullYear()} Aqeedah</span>
             <Link href={`/${lang}/method`}>{t("nav_method")}</Link>
-            <Link href="/workspace">Ishxona · Workspace</Link>
           </p>
         </div>
       </footer>

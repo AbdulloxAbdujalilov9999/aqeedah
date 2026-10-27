@@ -4,9 +4,7 @@ A bilingual (Uzbek + English) Islamic question-and-answer platform. People ask; 
 with evidence; a second, senior scholar reviews every answer before it is published.
 
 - **Public site** (`/uz`, `/en`): search (Latin and Cyrillic Uzbek both work), topics, answer pages
-  with Qur'an/hadith evidence blocks, asking a question, tracking it by number + code, scholars, method.
-- **Workspace** (`/workspace`): triage, assigning, writing answers, review and publishing,
-  translations into the second language, team roles.
+  with Qur'an/hadith evidence blocks, asking a question, tracking it by its number, scholars, method.
 - **Latin / Cyrillic switch** for Uzbek, converted on the fly.
 
 The original research and design proposal is in [`design/index.html`](design/index.html).
@@ -31,15 +29,14 @@ The Supabase URL and publishable key have defaults in `lib/config.ts`; override 
 Import this repository on vercel.com. The framework is detected as Next.js; no environment
 variables are required.
 
-## Staff accounts and roles
+## Admins
 
-1. The **first** account created at `/workspace/login` becomes **admin** automatically.
-2. Other staff create accounts there too; the admin gives each a role on *Workspace → Team*:
-   - **Moderator**: triage, link duplicates, decline.
-   - **Scholar**: write answers.
-   - **Reviewer**: approve or return answers (cannot approve their own).
-   - **Translator**: write the second-language version.
-   - **Admin**: everything, plus roles.
+Visitors never need an account: they ask with their name (and optionally a phone number or
+Telegram username) and follow their question by its number.
+
+Answering happens in the separate admin app,
+[aqeedah-admins](https://github.com/AbdulloxAbdujalilov9999/aqeedah-admins), which uses the
+same Supabase database.
 
 ## Answer format
 

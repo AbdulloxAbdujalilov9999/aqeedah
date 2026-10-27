@@ -15,20 +15,18 @@ type Props = {
 };
 
 export default function AskForm({ lang, cyr, topics, d, initialQ, initialTopic }: Props) {
+  const [name, setName] = useState("");
   const [body, setBody] = useState(initialQ);
   const [topic, setTopic] = useState(initialTopic);
   const [ansLang, setAnsLang] = useState<"uz" | "en">(lang);
-  const [anon, setAnon] = useState(true);
-  const [name, setName] = useState("");
   const [publish, setPublish] = useState(true);
   const [urgent, setUrgent] = useState(false);
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [tg, setTg] = useState("");
   const [similar, setSimilar] = useState<{ question_id: number; lang: string; title: string }[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [done, setDone] = useState<{ number: string; code: string } | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [doneId, setDoneId] = useState<number | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -44,44 +42,47 @@ export default function AskForm({ lang, cyr, topics, d, initialQ, initialTopic }
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     if (form.get("website")) return; // honeypot
+    if (!name.trim()) { setError(d.err_name); return; }
     if (body.trim().length < 15) { setError(d.err_short); return; }
+    if (!publish && !phone.trim() && !tg.trim()) { setError(d.err_contact); return; }
     setBusy(true);
     setError("");
-    const { data, error: err } = await supabaseBrowser().rpc("submit_question", {
-      p_lang: ansLang, p_topic_id: topic ? Number(topic) : null, p_body: body, p_anonymous: anon,
-      p_asker_name: anon ? null : name, p_publish_consent: publish, p_contact_email: email || null,
-      p_contact_telegram: tg.replace(/^@/, "") || null, p_urgent: urgent,
+    const { data, error: err } = await supabaseBrowser().rpc("ask_question", {
+      p_lang: ansLang, p_topic_id: topic ? Number(topic) : null, p_body: body, p_name: name,
+      p_phone: phone || null, p_username: tg || null, p_publish_consent: publish, p_urgent: urgent,
     });
     setBusy(false);
-    if (err) { setError(err.message.includes("daily_limit") ? d.err_daily : d.err_generic); return; }
-    const row = (Array.isArray(data) ? data[0] : data) as { number: string; track_code: string };
-    setDone({ number: row.number, code: row.track_code });
-    saveTicket({ number: row.number, code: row.track_code, at: new Date().toISOString(), excerpt: body.slice(0, 90) });
+    if (err) {
+      const m = err.message;
+      setError(m.includes("daily_limit") ? d.err_daily : m.includes("contact_required") ? d.err_contact : m.includes("name_required") ? d.err_name : d.err_generic);
+      return;
+    }
+    const id = Number(data);
+    setDoneId(id);
+    saveTicket({ id, at: new Date().toISOString(), excerpt: body.slice(0, 90) });
     window.scrollTo({ top: 0 });
   }
 
-  if (done) {
-    const text = `${d.number}: ${done.number} · ${d.code}: ${done.code}`;
+  if (doneId) {
     return (
       <div className="stack card" role="status">
         <h2>{d.sent_title}</h2>
         <p>{d.sent_body}</p>
         <div className="ticket">
-          <div><span className="label">{d.number}</span><span className="big">{done.number}</span></div>
-          <div><span className="label">{d.code}</span><span className="big">{done.code}</span></div>
+          <div><span className="label">{d.number}</span><span className="big">{doneId}</span></div>
         </div>
-        <div className="row">
-          <button type="button" className="btn ghost" onClick={async () => {
-            try { await navigator.clipboard.writeText(text); setCopied(true); } catch { setCopied(false); }
-          }}>{copied ? d.copied : d.copy}</button>
-          <Link className="btn" href={`/${lang}/track?n=${done.number}&c=${done.code}`}>{d.go_track}</Link>
-        </div>
+        <div><Link className="btn" href={`/${lang}/track?id=${doneId}`}>{d.go_track}</Link></div>
       </div>
     );
   }
 
   return (
     <form className="stack" onSubmit={submit} noValidate>
+      <label className="field">
+        <span>{d.f_name}</span>
+        <input id="name" type="text" maxLength={80} value={name} onChange={(e) => setName(e.target.value)} autoComplete="given-name" required />
+        <span className="help">{d.f_name_help}</span>
+      </label>
       <label className="field">
         <span>{d.f_topic}</span>
         <select id="topic" value={topic} onChange={(e) => setTopic(e.target.value)}>
@@ -111,23 +112,19 @@ export default function AskForm({ lang, cyr, topics, d, initialQ, initialTopic }
           <label className="check"><input type="radio" name="alang" checked={ansLang === "en"} onChange={() => setAnsLang("en")} /> English</label>
         </div>
       </fieldset>
-      <label className="check"><input id="anon" type="checkbox" checked={anon} onChange={(e) => setAnon(e.target.checked)} /> {d.f_anon}</label>
-      {!anon && (
-        <label className="field"><span>{d.f_name}</span><input id="name" type="text" maxLength={80} value={name} onChange={(e) => setName(e.target.value)} /></label>
-      )}
+      <div className="field">
+        <span>{d.f_contact}</span>
+        <div className="grid-2">
+          <input id="phone" type="tel" inputMode="tel" placeholder={d.f_phone} value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={20} autoComplete="tel" />
+          <input id="tg" type="text" placeholder={d.f_username} value={tg} onChange={(e) => setTg(e.target.value)} maxLength={64} />
+        </div>
+        <span className="help">{d.f_contact_help}</span>
+      </div>
       <label className="check">
         <input id="publish" type="checkbox" checked={publish} onChange={(e) => setPublish(e.target.checked)} />
         <span>{d.f_public}<span className="help" style={{ display: "block" }}>{d.f_public_help}</span></span>
       </label>
       <label className="check"><input id="urgent" type="checkbox" checked={urgent} onChange={(e) => setUrgent(e.target.checked)} /> {d.f_urgent}</label>
-      <div className="field">
-        <span>{d.f_contact}</span>
-        <div className="grid-2">
-          <input id="email" type="email" placeholder={d.f_email} value={email} onChange={(e) => setEmail(e.target.value)} maxLength={120} />
-          <input id="tg" type="text" placeholder={`@${d.f_telegram}`} value={tg} onChange={(e) => setTg(e.target.value)} maxLength={64} />
-        </div>
-        <span className="help">{d.f_contact_help}</span>
-      </div>
       <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: "absolute", left: "-9999px" }} />
       {error && <div className="alert err" role="alert">{error}</div>}
       <div><button className="btn" type="submit" disabled={busy}>{busy ? d.sending : d.submit}</button></div>
